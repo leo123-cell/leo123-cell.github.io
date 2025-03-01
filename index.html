@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留学申请评估系统</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-dark: #1557b0;
+            --success-color: #34a853;
+            --error-color: #ea4335;
+            --warning-color: #fbbc05;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --background-light: #f8f9fa;
+            --border-color: #dadce0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px var(--shadow-color);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group:hover {
+            transform: translateX(4px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .form-group:hover label {
+            color: var(--primary-color);
+        }
+
+        select, textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            background-color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        select:hover, textarea:hover, input[type="text"]:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        select:focus, textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.2);
+        }
+
+        select {
+            height: 42px;
+            cursor: pointer;
+            padding-right: 40px;
+        }
+
+        input[type="text"] {
+            height: 42px;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-group:hover .form-hint {
+            opacity: 0.8;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26,115,232,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26,115,232,0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 32px 0;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        #result {
+            margin-top: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section {
+            margin-bottom: 28px;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .result-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .score-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-value.low {
+            color: var(--error-color);
+        }
+
+        .score-value.medium {
+            color: var(--warning-color);
+        }
+
+        .score-value.high {
+            color: var(--success-color);
+        }
+
+        .advantages-section {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .disadvantages-section {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        }
+
+        .suggestions-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        }
+
+        .risk-section {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .advantage-item, .disadvantage-item, .suggestion-item {
+            margin: 16px 0;
+            padding-left: 32px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .advantage-item:hover, .disadvantage-item:hover, .suggestion-item:hover {
+            transform: translateX(4px);
+        }
+
+        .advantage-item:before, .disadvantage-item:before, .suggestion-item:before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .progress-container {
+            display: none;
+            margin: 32px 0;
+            padding: 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, #64b5f6 100%);
+            transition: width 0.8s ease;
+            border-radius: 3px;
+        }
+
+        .progress-status {
+            margin-top: 28px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 24px 0;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 0;
+        }
+
+        .progress-step {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background-color: var(--border-color);
+            border-radius: 50%;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 0 6px rgba(26,115,232,0.2);
+        }
+
+        .progress-step.completed {
+            background-color: var(--success-color);
+            transform: scale(1.1);
+        }
+
+        .progress-step-label {
+            position: absolute;
+            top: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .progress-step.completed .progress-step-label {
+            color: var(--success-color);
+        }
+
+        .error {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .advantage-item:before {
+            content: "✓";
+            color: var(--success-color);
+        }
+
+        .disadvantage-item:before {
+            content: "✗";
+            color: var(--error-color);
+        }
+
+        .suggestion-item:before {
+            content: "→";
+            color: var(--warning-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>留学申请评估系统</h1>
+        <form id="applicationForm">
+            <div class="form-group">
+                <label for="targetSchool">目标院校：</label>
+                <input type="text" id="targetSchool" required placeholder="请输入目标院校名称">
+                <div class="form-hint">例如：香港大学、新加坡国立大学、南洋理工大学等</div>
+            </div>
+
+            <div class="form-group">
+                <label for="major">目标专业：</label>
+                <input type="text" id="major" required placeholder="请输入目标专业名称">
+                <div class="form-hint">例如：计算机科学、金融学、电子工程等</div>
+            </div>
+
+            <div class="form-group">
+                <label for="degree">目标学位：</label>
+                <select id="degree" required>
+                    <option value="">请选择学位类型</option>
+                    <option value="master">硕士</option>
+                    <option value="phd">博士</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="personalInfo">个人信息：</label>
+                <textarea id="personalInfo" required placeholder="请详细描述您的教育背景、GPA、科研成果、获奖情况等信息"></textarea>
+                <div class="form-hint">建议包含：本科及硕士院校及成绩、发表论文情况、获得奖项、实习经历等</div>
+            </div>
+
+            <button type="submit">开始评估</button>
+        </form>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step" data-step="1">
+                    <div class="progress-step-label">信息验证</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-step-label">背景分析</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-step-label">院校匹配</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-step-label">成功率计算</div>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="progress-step-label">生成报告</div>
+                </div>
+            </div>
+            <div class="progress-status" id="progressStatus">正在验证申请信息...</div>
+        </div>
+        <div class="loading" id="loading">正在分析您的申请信息，请稍候...</div>
+        <div id="result">
+            <div class="result-section score-section">
+                <div class="section-title">申请成功概率评估</div>
+                <div class="score-value" id="score-value"></div>
+            </div>
+            <div class="result-section advantages-section">
+                <div class="section-title">申请优势</div>
+                <div id="advantages-list"></div>
+            </div>
+            <div class="result-section disadvantages-section">
+                <div class="section-title">申请劣势</div>
+                <div id="disadvantages-list"></div>
+            </div>
+            <div class="result-section suggestions-section">
+                <div class="section-title">改进建议</div>
+                <div id="suggestions-list"></div>
+            </div>
+            <div class="result-section risk-section">
+                <div class="section-title">风险对冲方案</div>
+                <div id="risk-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "sk-7f56c1dcb093497bad95633f6070ebbb";
+        
+        function parseAnalysisResult(content) {
+            const result = {
+                score: null,
+                advantages: [],
+                disadvantages: [],
+                suggestions: [],
+                risks: []
+            };
+            
+            try {
+                // 改进成功概率提取逻辑
+                const scorePatterns = [
+                    /成功率[约为]*[：:]\s*(\d+[.\d]*%)/,
+                    /申请成功概率[约为]*[：:]\s*(\d+[.\d]*%)/,
+                    /录取概率[约为]*[：:]\s*(\d+[.\d]*%)/,
+                    /(\d+[.\d]*%)的?成功率/,
+                    /(\d+[.\d]*%)的?录取概率/
+                ];
+
+                for (const pattern of scorePatterns) {
+                    const match = content.match(pattern);
+                    if (match) {
+                        result.score = match[1];
+                        // 确保百分比格式正确
+                        if (!result.score.endsWith('%')) {
+                            result.score += '%';
+                        }
+                        break;
+                    }
+                }
+
+                // 如果没有找到百分比，设置默认值
+                if (!result.score) {
+                    result.score = '0%';
+                    console.warn('未能从API响应中提取成功率，使用默认值0%');
+                }
+                
+                // 将内容按段落分割
+                const sections = content.split(/\n\s*\n/);
+                
+                sections.forEach(section => {
+                    const lines = section.split('\n').map(line => line.trim()).filter(line => line);
+                    
+                    if (lines.length === 0) return;
+                    
+                    const firstLine = lines[0].toLowerCase();
+                    
+                    // 确定当前段落类型
+                    let sectionType = null;
+                    if (firstLine.includes('优势') || firstLine.includes('强项')) {
+                        sectionType = 'advantages';
+                    } else if (firstLine.includes('劣势') || firstLine.includes('不足') || firstLine.includes('缺点')) {
+                        sectionType = 'disadvantages';
+                    } else if (firstLine.includes('建议') || firstLine.includes('改进')) {
+                        sectionType = 'suggestions';
+                    }
+                    
+                    if (sectionType) {
+                        // 从第二行开始提取内容
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i];
+                            // 如果遇到下一个段落的标题，就停止
+                            if (line.includes('优势：') || line.includes('劣势：') || 
+                                line.includes('建议：') || line.includes('成功率：')) {
+                                break;
+                            }
+                            
+                            // 处理不同的列表格式
+                            if (line.startsWith('-') || line.startsWith('•') || 
+                                line.startsWith('*') || /^\d+[.、)]/.test(line)) {
+                                const content = line.replace(/^[-•*\d.、)]\s*/, '').trim();
+                                if (content) {
+                                    result[sectionType].push(content);
+                                }
+                            } else if (line && !line.includes('：')) {
+                                // 如果是没有标记的普通文本行，也将其作为一个点
+                                result[sectionType].push(line);
+                            }
+                        }
+                    }
+                });
+
+                // 如果某个部分为空，尝试其他匹配方式
+                if (result.advantages.length === 0 || result.disadvantages.length === 0 || result.suggestions.length === 0) {
+                    const lines = content.split('\n');
+                    let currentSection = '';
+                    
+                    lines.forEach(line => {
+                        line = line.trim();
+                        if (!line) return;
+                        
+                        // 检查是否是新的段落开始
+                        if (line.includes('优势：')) {
+                            currentSection = 'advantages';
+                            return;
+                        } else if (line.includes('劣势：')) {
+                            currentSection = 'disadvantages';
+                            return;
+                        } else if (line.includes('建议：')) {
+                            currentSection = 'suggestions';
+                            return;
+                        }
+                        
+                        // 如果当前行不是段落标题，且属于某个段落，则添加内容
+                        if (currentSection && !line.includes('：') && 
+                            !line.includes('成功率') && line.length > 0) {
+                            // 如果该部分当前为空，则添加该内容
+                            if (result[currentSection].length === 0) {
+                                result[currentSection].push(line);
+                            }
+                        }
+                    });
+                }
+
+                // 添加调试日志
+                console.log('API返回内容:', content);
+                console.log('解析结果:', result);
+                
+                // 确保每个部分至少有一个项目
+                ['advantages', 'disadvantages', 'suggestions', 'risks'].forEach(section => {
+                    if (result[section].length === 0) {
+                        result[section].push('正在分析中...');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('解析评估结果时发生错误:', error);
+                throw new Error('评估结果解析失败，请重试');
+            }
+            
+            return result;
+        }
+
+        async function callAPI(formData) {
+            try {
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-reasoner",
+                        messages: [
+                            {
+                                role: "system",
+                                content: `你是一个专业的留学申请顾问，负责根据用户的学术背景、科研成果、目标院校等信息，评估其申请成功率。
+
+            你需要遵循以下规则：
+            评分标准在这里：将本科院校权重设置为25%(本科院校层次分为海外qs100/C9，
+            国外qs100-200, 国内985，211，一本，二本，三本, 国内的双非院校，也就是一本以下院校，
+            在评分中应有明显劣势，qs200以后院校参考usnews，或者软科排名进行评估，如果均在200以后的院校约等于211院校)，
+            将本科成绩的权重设置为 20% (GPA是否高于80或者3.0/4将会是极其重要的因素，更高的成绩将会获得更高的得分，
+            低于3.0/4或80/100的成绩应在评分中获得明显劣势)，将硕士院校的权重设置为10%，硕士成绩的权重设置为5%，
+            将是学术成果如高水平论文的权重设置为20%，将校级以上奖学金的权重设置为10%，剩下的10%根据他的其他竞赛，
+            专利，推荐信(强推)等酌情打分。若目标院校为香港新加坡地区，则申请难度应当增大，若申请者申请CSC，
+            则申请难度会适当降低，香港地区没有CSC。
+
+            给出一些详细、不空洞的分析建议。也要给出优势和劣势。同时注意，不要按每一项多少分然后加起来去计算概率，通过整体的分析来给出概率。
+
+            清华和北大的本科要比其他中国大陆高校认可度高。此外，硕士的GPA不怎么看。
+            申请劣势和改进建议之类的可以言辞犀利一点，可以适当嘴臭。
+
+
+                                信息缺失处理规则：
+                                1. 未提及科研成果视为无相关成果
+                                2. 未提及奖学金视为无奖学金记录
+                                3. 未提及推荐信视为无推荐信
+                                4. 未提及竞赛获奖视为无竞赛经历
+                                5. 必需信息（如本科院校、成绩）缺失需在建议中明确指出
+
+                                评估报告格式：
+                                申请成功率：XX%
+                                
+                                核心优势：
+                                - [具体优势点1，包含该优势的具体表现和对申请的积极影响]
+                                - [具体优势点2，说明为什么这是优势以及如何影响申请]
+                                
+                                主要劣势：
+                                - [具体劣势点1，解释该劣势可能带来的不利影响]
+                                - [具体劣势点2，分析该劣势对申请结果的影响程度]
+                                
+                                提升建议：
+                                - [具体建议1，包含明确的改进方向和具体可执行的措施]
+                                - [具体建议2，说明预期效果和实施方法]
+
+                                风险对冲方案：
+                                - [备选申请方案1，包含具体院校和专业建议]
+                                - [备选申请方案2，说明可行性和申请策略]
+                                - [时间规划建议，包含具体时间节点]
+
+                                风险对冲方案`
+                            },
+                            {
+                                role: "user",
+                                content: `
+                                我的申请信息如下：
+                                - 目标院校：${formData.targetSchool}
+                                - 目标专业：${formData.major}
+                                - 目标学位：${formData.degree}
+                                - 个人信息：${formData.personalInfo}
+                                `
+                            }
+                        ],
+                        temperature: 0.3,
+                        max_tokens: 2000,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API响应错误:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        errorText
+                    });
+                    throw new Error(`服务暂时不可用 (${response.status})`);
+                }
+
+                const responseText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('API响应解析失败:', responseText);
+                    throw new Error('评估服务暂时异常，请稍后再试');
+                }
+
+                if (!data?.choices?.[0]?.message?.content) {
+                    console.error('API响应数据结构异常:', data);
+                    throw new Error('未能获取评估结果，请重试');
+                }
+
+                return data.choices[0].message.content;
+            } catch (error) {
+                if (error.message.includes('API请求失败') || 
+                    error.message.includes('服务暂时不可用') ||
+                    error.message.includes('评估服务暂时异常')) {
+                    throw error;
+                }
+                console.error('API调用过程发生错误:', error);
+                throw new Error('评估系统暂时无法使用，请稍后重试');
+            }
+        }
+        
+        function displayResults(analysisResult) {
+            const resultDiv = document.getElementById('result');
+            const scoreValue = document.getElementById('score-value');
+            const advantagesList = document.getElementById('advantages-list');
+            const disadvantagesList = document.getElementById('disadvantages-list');
+            const suggestionsList = document.getElementById('suggestions-list');
+            const riskList = document.getElementById('risk-list');
+            
+            // 显示成功概率并设置颜色
+            scoreValue.textContent = analysisResult.score || '评估中';
+            
+            // 根据成功率设置颜色
+            if (analysisResult.score) {
+                const percentage = parseInt(analysisResult.score.replace('%', ''));
+                scoreValue.classList.remove('low', 'medium', 'high');
+                if (percentage < 50) {
+                    scoreValue.classList.add('low');
+                } else if (percentage < 70) {
+                    scoreValue.classList.add('medium');
+                } else {
+                    scoreValue.classList.add('high');
+                }
+            }
+            
+            // 处理加粗文本的函数
+            const processBoldText = (text) => {
+                return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            };
+            
+            // 显示优势
+            advantagesList.innerHTML = analysisResult.advantages
+                .map(adv => `<div class="advantage-item">${processBoldText(adv)}</div>`)
+                .join('');
+            
+            // 显示劣势
+            disadvantagesList.innerHTML = analysisResult.disadvantages
+                .map(dis => `<div class="disadvantage-item">${processBoldText(dis)}</div>`)
+                .join('');
+            
+            // 显示建议
+            suggestionsList.innerHTML = analysisResult.suggestions
+                .map(sug => `<div class="suggestion-item">${processBoldText(sug)}</div>`)
+                .join('');
+            
+            // 显示风险对冲方案
+            riskList.innerHTML = analysisResult.risks
+                .map(risk => `<div class="suggestion-item">${processBoldText(risk)}</div>`)
+                .join('');
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            const formData = {
+                targetSchool: document.getElementById('targetSchool').value,
+                major: document.getElementById('major').value,
+                degree: document.getElementById('degree').options[document.getElementById('degree').selectedIndex].text,
+                personalInfo: document.getElementById('personalInfo').value
+            };
+
+            try {
+                // 开始进度展示，每个环节等待5秒
+                updateProgress(1, '正在验证申请信息...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                updateProgress(2, '正在分析申请背景...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                updateProgress(3, '正在进行院校匹配...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                updateProgress(4, '正在计算申请成功率...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                updateProgress(5, '正在生成评估报告...');
+                
+                const apiResponse = await callAPI(formData);
+                const analysisResult = parseAnalysisResult(apiResponse);
+                
+                // 等待5秒后显示结果
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                displayResults(analysisResult);
+                // 完成所有步骤
+                updateProgress(5, '评估完成！');
+            } catch (error) {
+                console.error('评估过程发生错误:', error);
+                
+                // 更新进度状态为错误
+                const progressStatus = document.getElementById('progressStatus');
+                const progressContainer = document.getElementById('progressContainer');
+                if (progressStatus) {
+                    progressStatus.textContent = '评估失败，请重试';
+                    progressContainer.style.display = 'block';
+                }
+                
+                // 重置进度条状态
+                const steps = document.querySelectorAll('.progress-step');
+                if (steps && steps.length > 0) {
+                    steps.forEach(step => {
+                        step.classList.remove('active', 'completed');
+                    });
+                    
+                    // 将最后一步设置为错误状态
+                    const lastStep = steps[steps.length - 1];
+                    lastStep.classList.add('active');
+                    lastStep.style.backgroundColor = 'var(--error-color)';
+                }
+
+                // 创建并显示错误信息
+                const resultDiv = document.getElementById('result');
+                if (resultDiv) {
+                    // 先清空现有内容
+                    while (resultDiv.firstChild) {
+                        resultDiv.removeChild(resultDiv.firstChild);
+                    }
+
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'error result-section';
+                    errorMessage.style.backgroundColor = '#ffebee';
+                    errorMessage.style.border = '1px solid #ffcdd2';
+                    errorMessage.style.padding = '24px';
+                    errorMessage.style.marginTop = '20px';
+                    errorMessage.style.color = '#c62828';
+                    
+                    const errorContent = `
+                        <div class="section-title" style="color: #c62828;">评估失败</div>
+                        <div style="font-size: 15px; margin-bottom: 12px;">${error.message}</div>
+                        <div style="font-size: 14px; color: #666;">请刷新页面后重试，如果问题持续存在，请联系管理员。</div>
+                    `;
+                    
+                    errorMessage.innerHTML = errorContent;
+                    resultDiv.appendChild(errorMessage);
+                    resultDiv.style.display = 'block';
+                }
+            } finally {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+            }
+        });
+
+        // 添加进度更新函数
+        function updateProgress(step, status) {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBarFill = document.getElementById('progressBarFill');
+            const progressStatus = document.getElementById('progressStatus');
+            const steps = document.querySelectorAll('.progress-step');
+            
+            progressContainer.style.display = 'block';
+            
+            // 更新进度条
+            const progress = (step / 5) * 100;
+            progressBarFill.style.width = `${progress}%`;
+            
+            // 更新状态文本
+            progressStatus.textContent = status;
+            
+            // 更新步骤指示器
+            steps.forEach((stepEl, index) => {
+                if (index + 1 < step) {
+                    stepEl.classList.add('completed');
+                    stepEl.classList.remove('active');
+                } else if (index + 1 === step) {
+                    stepEl.classList.add('active');
+                    stepEl.classList.remove('completed');
+                } else {
+                    stepEl.classList.remove('active', 'completed');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
